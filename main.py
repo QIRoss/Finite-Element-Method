@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import griddata
 
 NE = 25
 ND = 21
@@ -60,6 +62,19 @@ for I in range(NE):
                     C[IR, IC] += CE[J, L]
 
 V = np.linalg.solve(C, B)
+
+grid_x, grid_y = np.mgrid[0:1:100j, 0:1:100j]
+grid_z = griddata((X, Y), V.flatten(), (grid_x, grid_y), method='cubic')
+
+plt.figure(figsize=(8, 6))
+plt.contourf(grid_x, grid_y, grid_z, levels=14, cmap="RdYlBu")
+plt.colorbar(label='Tensão (V)')
+plt.scatter(X, Y, c=V, edgecolors='k')
+plt.title('Mapa de Calor das Tensões nos Nós')
+plt.xlabel('Coordenada X')
+plt.ylabel('Coordenada Y')
+plt.savefig('mapa_de_calor_tensoes.png')
+plt.show()
 
 print("ND, NE, NP:", ND, NE, NP)
 print("Nós, X, Y, V:")
